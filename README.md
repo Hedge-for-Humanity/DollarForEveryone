@@ -1,3 +1,23 @@
+# CTC Development Instructions:
+
+## Setup MongoDB
+
+If it is your first time running the database:
+- Create a `~/data/db` directory 
+- Run `mongod --dbpath ~/data/db`
+- In a new terminal tab, run `mongo`
+- Within the mongo shell, type `use d4e` to create the db
+
+Otherwise:
+- Run `mongod --dbpath ~/data/db`
+
+Run, in the root directory,
+- `yarn`
+- `yarn run build`
+- `yarn start-basic`
+
+Then a tab should pop up in your browser with the Dollar For Everyone application!
+
 ## Burner Wallet 2.0
 
 The Burner Wallet 2.0 is a modular, extendable and customizable web application for seamless crypto payments.

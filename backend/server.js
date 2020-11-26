@@ -219,61 +219,6 @@ app.get("/api/status/:address", async (req, res) => {
   })
 })
 
-/**
- * Check if verified: Determine if a user's uuid has been verified to a receive a dollar
- * TODO Check user id database 
- */
-app.post('/receive-dollar/:address', async (req, res, next) => { 
-  
-  const address = req.params.address
-  const user = await User.findOne({ address })
-  if (!user.verified) {
-    // They have not been verified yet!
-    // Check if the contextId has been verified
-    try {
-      const response = await axios.get(
-        BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
-      )  
-      const data = response.data.data
-      if (data.unique) { // The user is deemed unique by BrightID
-        // The context id has newly been verified!
-        user.verified = true
-        await user.save().exec()
-        await sendDollar(address)
-        res.send('Success')
-      } else {
-        res.send({
-          code: 406,
-          error: true,
-          errorMessage: 'user is not verified'
-        })
-      }
-
-    } catch(error) {
-      const data = error.response.data
-      const errorMsg = data.errorMessage
-      if (errorMsg === 'contextId not found' ||
-          errorMsg === 'user can not be verified for this context') {
-        res.send(data)
-      } else if (errorMsg === 'user is not sponsored') {
-        sponsorUser(user.contextId);
-        res.send(data)
-      } else {
-        // Uncaught error: pass it to Express middleware.
-        next(error)
-      }
-    }
-      
-    } else {
-      res.send({
-        code: 400,
-        error: true,
-        errorMessage: 'Already received dollar.'
-      })
-    } 
-  
-})
-
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}!`)
